@@ -24,8 +24,8 @@ const Duration _kExpand = Duration(milliseconds: 200);
 ///
 ///  * [ListTile], useful for creating expansion tile [children] when the
 ///    expansion tile represents a sublist.
-///  * The "Expand/collapse" section of
-///    <https://material.io/guidelines/components/lists-controls.html>.
+///  * The "Expand and collapse" section of
+///    <https://material.io/components/lists>.
 class ExpansionTile extends StatefulWidget {
   /// Creates a single-line [ListTile] with a trailing button that expands or collapses
   /// the tile to reveal or hide the [children]. The [initiallyExpanded] property must
@@ -46,14 +46,14 @@ class ExpansionTile extends StatefulWidget {
     this.expandedAlignment,
     this.childrenPadding,
     this.collapsedBackgroundColor,
-  }) : assert(initiallyExpanded != null),
-       assert(maintainState != null),
-       assert(
-       expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
-       'CrossAxisAlignment.baseline is not supported since the expanded children '
-           'are aligned in a column, not a row. Try to use another constant.',
-       ),
-       super(key: key);
+  })  : assert(initiallyExpanded != null),
+        assert(maintainState != null),
+        assert(
+          expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
+          'CrossAxisAlignment.baseline is not supported since the expanded children '
+          'are aligned in a column, not a row. Try to use another constant.',
+        ),
+        super(key: key);
 
   /// A widget to display before the title.
   ///
@@ -151,10 +151,14 @@ class ExpansionTile extends StatefulWidget {
   _ExpansionTileState createState() => _ExpansionTileState();
 }
 
-class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProviderStateMixin {
-  static final Animatable<double> _easeOutTween = CurveTween(curve: Curves.easeOut);
-  static final Animatable<double> _easeInTween = CurveTween(curve: Curves.easeIn);
-  static final Animatable<double> _halfTween = Tween<double>(begin: 0.0, end: 0.5);
+class _ExpansionTileState extends State<ExpansionTile>
+    with SingleTickerProviderStateMixin {
+  static final Animatable<double> _easeOutTween =
+      CurveTween(curve: Curves.easeOut);
+  static final Animatable<double> _easeInTween =
+      CurveTween(curve: Curves.easeIn);
+  static final Animatable<double> _halfTween =
+      Tween<double>(begin: 0.0, end: 0.5);
 
   final ColorTween _borderColorTween = ColorTween();
   final ColorTween _headerColorTween = ColorTween();
@@ -180,11 +184,12 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
     _borderColor = _controller.drive(_borderColorTween.chain(_easeOutTween));
     _headerColor = _controller.drive(_headerColorTween.chain(_easeInTween));
     _iconColor = _controller.drive(_iconColorTween.chain(_easeInTween));
-    _backgroundColor = _controller.drive(_backgroundColorTween.chain(_easeOutTween));
+    _backgroundColor =
+        _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
-    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ?? widget.initiallyExpanded;
-    if (_isExpanded)
-      _controller.value = 1.0;
+    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ??
+        widget.initiallyExpanded;
+    if (_isExpanded) _controller.value = 1.0;
   }
 
   @override
@@ -200,8 +205,7 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
         _controller.forward();
       } else {
         _controller.reverse().then<void>((void value) {
-          if (!mounted)
-            return;
+          if (!mounted) return;
           setState(() {
             // Rebuild without widget.children.
           });
@@ -236,10 +240,11 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
               leading: widget.leading,
               title: widget.title,
               subtitle: widget.subtitle,
-              trailing: widget.trailing ?? RotationTransition(
-                turns: _iconTurns,
-                child: const Icon(Icons.expand_more),
-              ),
+              trailing: widget.trailing ??
+                  RotationTransition(
+                    turns: _iconTurns,
+                    child: const Icon(Icons.expand_more),
+                  ),
             ),
           ),
           ClipRect(
@@ -276,18 +281,18 @@ class _ExpansionTileState extends State<ExpansionTile> with SingleTickerProvider
     final bool shouldRemoveChildren = closed && !widget.maintainState;
 
     final Widget result = Offstage(
-      child: TickerMode(
-        child: Padding(
-          padding: widget.childrenPadding ?? EdgeInsets.zero,
-          child: Column(
-            crossAxisAlignment: widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
-            children: widget.children,
+        child: TickerMode(
+          child: Padding(
+            padding: widget.childrenPadding ?? EdgeInsets.zero,
+            child: Column(
+              crossAxisAlignment: widget.expandedCrossAxisAlignment ??
+                  CrossAxisAlignment.center,
+              children: widget.children,
+            ),
           ),
+          enabled: !closed,
         ),
-        enabled: !closed,
-      ),
-      offstage: closed
-    );
+        offstage: closed);
 
     return AnimatedBuilder(
       animation: _controller.view,
